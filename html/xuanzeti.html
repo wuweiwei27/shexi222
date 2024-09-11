@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选择题</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        section {
+            overflow-x: hidden;
+            block-size: 100%;
+        }
+
+        /* 设置 html 元素的纵向滚动方式为强制性的 */
+        html {
+            scroll-snap-type: y mandatory; 
+        }
+
+        /* 设置 section 元素的滚动对齐方式为起始位置，并且始终停止滚动 */
+        section {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* 设置.box的宽度为视口宽度，高度为视口高度，相对定位，显示为flex布局， 
+        溢出隐藏 */
+        .box {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* 设置.box-block的绝对定位，顶部和左侧均为0，宽度和高度为100%， 
+        背景尺寸为120%，背景不重复，背景位置为中心顶部，使用3D变换，
+        will-change属性为background-position */ 
+        .box-block {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 120%;
+            background-repeat: no-repeat;
+            background-position: center 0;
+            transform: translate3d(0, 0, 0);
+            will-change: background-position;
+        }
+
+        /* 在最大宽度为1200px的媒体查询下，将.box-block的背景尺寸设置为150%， 
+        .box的高度设置为50vh */
+        @media (max-width:1200px) {
+            .box-block {
+                background-size: 150%;
+            }
+
+            .box {
+                height: 50vh;
+            }
+        }
+
+        /* 设置.box-block的伪元素::before的绝对定位，顶部和左侧均为0，内容为空， 
+        显示为块级元素， 宽度和高度为100%，背景颜色为rgba(0, 0, 0, 0.35)， 
+        背景颜色的过渡效果为0.3秒的ease过渡 */
+        .box-block::before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(9, 9, 9, 0.35);
+            transition: background-color 0.3s ease;
+        }
+
+        /* 当鼠标悬停在.box上时，将.box-block的伪元素::before的 
+        背景颜色设置为rgba(0, 0, 0, 0.2) */
+        .box:hover .box-block::before {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* 设置.box-text的相对定位，宽度和高度为100%，显示为flex布局， 
+        垂直居中和水平居中，主轴为纵向 */
+        .box-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-family: '优设标题黑';
+            color: #ececed;
+            font-size: 40px;
+        }
+
+        .answer{
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-family: '优设标题黑';
+            color: #ececed;
+            font-size: 40px;
+        }
+
+        .hidden {
+            display: none;
+        }
+        /*设置.box-text1内的.text-title的字体大小为24px， 
+        底部外边距为20px */
+        .box-text1 .text-title {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        /* 设置.box-text内的.text-title的字体大小为24px， 
+        底部外边距为20px */
+        .box-text .text-title {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .box:nth-child(1n) .box-block {
+            background-color: rgb(48, 63, 90);
+        }
+
+        .box:nth-child(2n) .box-block {
+            background-color: rgb(63, 79, 119);
+            background-position: 1000px 1100px;
+        }
+
+        .box:nth-child(3n) .box-block {
+            background-color: rgb(48, 63, 90);
+        }
+
+        .box:nth-child(4n) .box-block {
+            background-color:  rgb(63, 79, 119);
+        }
+
+        .box:nth-child(5n) .box-block {
+            background-color: rgb(48, 63, 90);
+        }
+
+        .floating-image {  
+            position: fixed; /* 使用固定定位 */  
+            bottom: 20px; /* 距离页面底部20px */  
+            right: 20px; /* 距离页面右边20px */  
+            width: 50px; /* 图片宽度，根据实际情况调整 */  
+            height: auto; /* 图片高度自适应 */  
+            z-index: 1000; /* 确保图片在大多数元素之上 */  
+            cursor: pointer;
+        }
+
+        .floating-image-above {  
+        position: fixed; /* 同样使用固定定位 */  
+        bottom: 70px; /* 调整为比原图更高的位置，这里假设原图高度不会超过50px，所以增加50px作为间隔 */  
+        right: -10px; /* 保持与原图相同的右侧距离 */  
+        width: 100px; /* 与原图相同的宽度 */  
+        height: auto; /* 高度自适应 */  
+        z-index: 1001; /* 确保新图在原图之上 */  
+        cursor: pointer; /* 同样设置为可点击 */  
+        }
+    </style>
+</head>
+
+
+<body onclick="showText()">
+    <img src="..\img\return.png" alt="悬浮图片" class="floating-image" onclick="返回上一页()" >
+    <script>
+        function 返回上一页() {
+            window.history.back();
+        }
+    </script>
+    
+<a href="../html/wenda.html">
+    <img src="../img/next.png" alt="悬浮图片" class="floating-image-above">
+</a>
+
+    <section class="box">
+        <div class="box-block"></div>
+        <div class="box-text">
+            <br class="text-desc ">1.下列句子中，没有语病的一项是（ ）</br>
+                A. 保护并了解“社戏”这种传统艺术，是每个中国人义不容辞的责任。</br>
+                B. 我们能否弘扬传统文化，关键在于各级部门]的重视。</br>
+                C. 《社戏》的作者是闻名世界的中国作家鲁迅的作品。</br>
+                D. 《社戏》中有个聪明机智的人物双喜，文中对他有许多生动形象的语言描写和动作描写。</br>
+                </div> 
+            </div>
+            <div class="answer hidden " >
+                <br class="text-desc ">
+                【答案】D</br>
+                【解析】A.语序不当，“保护并了解”不符合认识的逻辑，应为“了解并保护”。B.两面对一面，应把“的”改为“是否”。
+                C.搭配不当，去掉“的作者”或“的作品”。
+            </div>
+    </section>
+
+    <section class="box">
+        <div class="box-block"></div>
+        <div class="box-text">
+            <div class="text-desc">2.“总之，是完了。到下午，我的朋友都去了，戏已经开场了，我似乎听到锣鼓的声音，而且知道他们在戏台下买豆浆喝。”对这段话理解不正确的一项是（ ）</br>
+                A. “我”虽然不能和朋友们一同去看戏，心却和他们一同去了。</br>
+                B. 想到“戏已经开场了”，“我似乎听到锣鼓的声音”，表现了“我”想要看社戏的急切心情。</br>
+                C. 渲染“我”看不成社戏的沮丧心情。</br>
+                D. 这里是实写。通过朋友们在戏台下买豆浆喝的场景，进一步表现出“我”对看社戏的渴望。</br>
+                </div>
+        </div>
+        <div class="answer hidden " >
+            <br class="text-desc ">
+            【答案】D</br>
+            【解析】
+            D“这里是实写”错误，应该是虚写。唱戏的锣鼓声、朋友们在戏台下买豆浆喝的场景等内容都是“我”的幻想。故D错误。
+        </div>
+    </section>
+
+    <section class="box">
+        <div class="box-block"></div>
+        <div class="box-text">
+            <div class="text-desc" >3.回忆课文《社戏》，填入文段横线处的词语正确的一组是（ ） 两岸的豆麦和河底的水草所发散出来的清香，
+                夹杂在水气中扑面的吹来；月色便_____在这水气里。淡黑的_____的连山，仿佛是踊跃的铁的兽脊似的，都远远地向船尾_____了，
+                但我却还以为船慢。他们换了四回手，渐望见_____的赵庄，而且似乎听到歌吹了，还有几点火，料想便是戏台，但或者也许是渔火。
+                A. 溶入 高耸 甩去 模糊</br>
+                B. 朦胧 起伏 跑去 依稀</br>
+                C. 撒在 起伏 跑去 依稀</br>
+                D. 朦胧 高耸 跑去 模糊</br>
+                
+            </div>
+        </div>
+        <div class="answer hidden " >
+            <br class="text-desc ">
+            【答案】B</br>
+                【解析】此题主要考查学生结合语境正确理解字词含义的能力。解答此题，要弄清词语的意义及常用用法，再次弄清词语的感彩，
+                尤其要注意结合具体的语境，理解字词含义的变化，辨析作答。
+        </div>
+    </section>
+
+    <section class="box">
+        <div class="box-block"></div>
+        <div class="box-text">
+            <div class="text-desc">4.下列句子中加点成语使用不恰当的一项是（ ）</br>
+                A. 张校长不辞辛劳，三顾茅庐去看望生病在家休养的杨老师。</br>
+                B. 妈妈列举了许多因上网而荒废学业的例子，语重心长地给我讲了沉迷于网络的害处。</br>
+                C. 如果掌握科学的学习方法，就会收到事半功倍的学习效果。</br>
+                D. 老张一辈子都勤勤恳恳地工作着。</br>
+                
+            </div>
+        </div>
+        <div class="answer hidden " >
+            <br class="text-desc ">
+            【答案】A</br>
+                【解析】A.使用有误。三顾茅庐：讲的是刘备三请诸葛亮的典故，
+                比喻求贤若渴，诚心诚意虚心求学，不耻下问的品质。故A符合题意。
+                B.使用正确。语重心长：话深刻有力，情意深长。故B不符合题意。
+                C.使用正确。事半功倍：指做事得法，因而费力小，收效大。故C不符合题意。
+                D.使用正确。勤勤恳恳：形容勤劳踏实。 也形容勤恳的样子。故D不符合题意。
+        </div>
+    </section>
+
+    <section class="box">
+        <div class="box-block"></div>
+        <div class="box-text">
+            <br class="text-desc">5.列句子中标点符号使用有误的一项是（ ）</br>
+            A. “都回来了！那里会错。我原说过写包票的！”双喜在船头上忽而大声的说。</br>
+            B. 他们一面议论着戏子，或骂，或笑，一面加紧的摇船。</br>
+            C. “我们和好吧，”她说：“我们还是好朋友。”</br>
+            D. 吹到耳边来的又是横笛，很悠扬；我疑心老旦已经进去了，但也不好意思说再回去看。</br>  
+            </div>
+        </div>
+        <div class="answer hidden " >
+            <br class="text-desc ">
+            【答案】C</br>
+            【解析】C.句中冒号应为逗号。位于引文之前的“说”“道”后用冒号。位于引文之后的“说”“道”分两种情况：
+            处于句末时，其后用句号；“说”“道”后还有其他成分时，其后用逗号。插在话语中间的“说”“道”后只能用逗号表示停顿。故C错误。
+        </div>
+        
+    <script>
+        // 获取窗口的高度 
+        const wh = window.innerHeight;
+        // 监听窗口滚动事件 
+        const sectionBlock = Array.from(document.querySelectorAll('.box-block'));
+        // 获取所有class为section-item__block的元素，并将其转换为数组 
+        window.addEventListener('scroll', () => {
+            // 遍历sectionBlock数组中的每个元素
+            sectionBlock.forEach(el => {
+                // 获取元素相对于视口的位置信息，包括距离视口底部的距离（bottom）、
+                // 距离视口顶部的距离（top）和元素的高度（height）
+                const { bottom, top, height } = el.getBoundingClientRect();
+                // 如果元素完全位于视口之外，或者完全位于视口之上，则不进行任何操作
+                if (bottom <= 0 || top >= wh) return;
+                // 计算元素的背景位置的y坐标，根据滚动条的位置进行计算 
+                const y = document.documentElement.scrollTop * 0.5;
+                // 设置元素的背景位置 
+                el.style.backgroundPosition = `center -${y}px`;
+            });
+        });
+        //答案弹出
+        let texts = document.querySelectorAll('.answer');
+        let index = 0;
+        function showText() {
+            if (index < texts.length) {
+                texts[index].classList.remove('hidden');
+                index++;
+            }
+        }
+    </script>
+
+</body>
+
+</html>

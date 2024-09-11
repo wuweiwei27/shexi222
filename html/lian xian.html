@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>连线题</title>
+<style>
+    html,body{
+        overflow: hidden;
+        background-color:  rgb(48, 63, 90);
+
+    }
+    h1 {
+        text-align: center;
+        font-size: 50px;
+        color: white;
+    }
+    .container {
+        margin: 0 auto;
+        display: flex; /* 使用 Flexbox 布局 */
+        height: 150vh; /* 设置容器高度为整个视口高度 */
+    }
+    .left-div{
+        flex: 1; /* 平分左右两个div的宽度 */
+        text-align: center;  
+    }
+    .right-div {
+        flex: 1; /* 平分左右两个div的宽度 */   
+    }
+    .left-div button{
+        margin: 12px;
+        padding: 6px 10px 6px 10px;
+        font-size: 35px;
+        font-family: 黑体;
+        font-weight: 600;
+        color:  white;
+        border: none; /* 移除按钮的边框 */
+        outline: none; /* 移除按钮的点击时的外边框 */
+        cursor: pointer;
+    }
+    .right-div button{
+        margin: 12px;
+        padding: 6px 10px 6px 10px;
+        font-size: 35px;
+        font-family: 黑体;
+        font-weight: 600;
+        color:  white;
+        border: none; /* 移除按钮的边框 */
+        outline: none; /* 移除按钮的点击时的外边框 */
+        cursor: pointer;
+    }
+    .line {
+    position: absolute;
+    border: 2px solid  white;
+    pointer-events: none; /* 防止线条干扰按钮的点击事件 */
+    z-index: 10; /* 将线条置于按钮下方 */
+}
+.correct-img, .incorrect-img {
+            display: none; /* 初始隐藏 */
+            position: absolute;
+            width: 100px;   
+            z-index: 100; /* 确保图片显示在顶层 */
+            right:10px; /* 放置在屏幕右端 */
+        }
+        .centered-indicator {
+        position: fixed;
+        top: 30%;
+        right: 10%; /* 调整位置至屏幕右端 */ 
+        text-align: center;
+}
+.another-floating-image {
+        position: fixed; /* 使用固定定位 */
+        top: 20px; /* 距离页面顶部70px，即前一个图片底部之下 */
+        right: 20px; /* 距离页面右边20px */
+        width: 50px; /* 图片宽度，与前一个图片相同 */
+        height: auto; /* 图片高度自适应 */
+        z-index: 1000; /* 确保图片在大多数元素之上 */
+        cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .bottom-text {
+        position: absolute;
+        bottom: 60px; /* 距离底部 60px */
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 45px;
+        z-index: 9999; /* 确保文字置于最顶层 */
+    }
+
+</style>
+</head>
+<body>
+
+    <a href="../index.html">
+        <img src="../img/house.png" alt="悬浮图片" class="another-floating-image">
+    </a>
+
+<h1>根据学习内容进行连线</h1>
+<div class="bottom-text">点击你认为匹配的选项进行链接</div>
+
+<div class="container">
+    <div class="left-div">
+        <button style="background-color: rgb(48, 63, 90);">艺术特色构思巧妙</button><br>
+        <button style="background-color: rgb(48, 63, 90);">以“社戏”作为线索</button><br>
+        <button style="background-color: rgb(48, 63, 90);">景物描写</button><br>
+        <button style="background-color: rgb(48, 63, 90);">人物描写</button><br>
+        <button style="background-color: rgb(48, 63, 90);">对比描写</button><br>
+
+    </div>
+    <div class="right-div">
+        <button style="background-color: rgb(48, 63, 90);">构思巧妙,强烈对照</button><br>
+        <button style="background-color: rgb(48, 63, 90);">结构严谨</button><br>
+        <button style="background-color: rgb(48, 63, 90);">围绕中心取舍材料</button><br>
+        <button style="background-color: rgb(48, 63, 90);">无限深情</button><br>
+        <button style="background-color: rgb(48, 63, 90);">生动简练，富于表现力</button><br>
+        
+    </div>  
+    <div class="centered-indicator">
+        <img class="correct-img" src="../img/yes.png" alt="Correct" style="display: none;">
+        <img class="incorrect-img" src="../img/no.png" alt="Incorrect" style="display: none;">
+    </div>
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    const leftButtons = document.querySelectorAll(".left-div button");
+    const rightButtons = document.querySelectorAll(".right-div button");
+    const container = document.querySelector(".container");
+    let activeLeftButton = null; // 用于存储当前活动的左侧按钮
+    let lines = []; // 用于存储创建的连线
+
+    rightButtons.forEach(rightButton => {
+        rightButton.addEventListener("click", function(event) {
+            if (activeLeftButton) {
+                const leftButtonIndex = Array.from(leftButtons).indexOf(activeLeftButton);
+                const existingLine = lines.find(line => line.start === leftButtonIndex);
+                if (existingLine) {
+                    // 如果左侧按钮已经有连线，则删除原有连线
+                    container.removeChild(existingLine.element);
+                    lines = lines.filter(line => line !== existingLine);
+                }
+
+                const endRect = rightButton.getBoundingClientRect();
+                const endX = endRect.left;
+                const endY = endRect.top + endRect.height / 2;
+
+                const startRect = activeLeftButton.getBoundingClientRect();
+                const startX = startRect.right;
+                const startY = startRect.top + startRect.height / 2;
+
+                const correctConnection = isCorrectConnection(leftButtonIndex, Array.from(rightButtons).indexOf(rightButton));
+                createLine(startX, startY, endX, endY, leftButtonIndex, correctConnection);
+                updateRightButtonIndicator(rightButton, correctConnection);
+            }
+        });
+    });
+
+    leftButtons.forEach((leftButton, index) => {
+        leftButton.addEventListener("click", function() {
+            // 移除之前的激活状态
+            leftButtons.forEach(button => button.classList.remove('active'));
+            leftButton.classList.add('active');
+            activeLeftButton = leftButton; // 更新当前活动的左侧按钮
+        });
+    });
+
+    function createLine(startX, startY, endX, endY, leftButtonIndex, correct) {
+        const line = document.createElement('div');
+        line.classList.add('line');
+        line.classList.add(correct ? 'correct' : 'incorrect'); // 根据正确与否添加不同的类
+        line.style.left = `${startX}px`;
+        line.style.top = `${startY}px`;
+
+        const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        line.style.width = `${length}px`;
+        line.style.transformOrigin = 'left';
+        line.style.transform = `rotate(${Math.atan2(endY - startY, endX - startX)}rad)`;
+
+        container.appendChild(line);
+        
+        // 存储连线的信息，以便后续删除
+        lines.push({
+            start: leftButtonIndex,
+            element: line
+        });
+    }
+
+    function isCorrectConnection(leftIndex, rightIndex) {
+        // 这里可以根据具体的逻辑来判断连接是否正确，例如根据 leftIndex 和 rightIndex 进行逻辑判断
+        // 这里只是一个示例
+        return leftIndex === rightIndex;
+    }
+
+    function updateRightButtonIndicator(button, correct) {
+        // 清除之前的标记
+        button.classList.remove('correct', 'incorrect');
+        // 添加新的标记
+        if (correct) {
+            button.classList.add('correct');
+        } else {
+            button.classList.add('incorrect');
+        }
+    }
+});
+document.addEventListener("DOMContentLoaded", function() {
+    const leftButtons = document.querySelectorAll(".left-div button");
+    const rightButtons = document.querySelectorAll(".right-div button");
+    const container = document.querySelector(".container");
+    const centeredIndicator = document.querySelector(".centered-indicator");
+
+    leftButtons.forEach(leftButton => {
+        leftButton.addEventListener("click", function() {
+            leftButtons.forEach(btn => btn.classList.remove('active'));
+            leftButton.classList.add('active');
+        });
+    });
+
+    rightButtons.forEach(rightButton => {
+        rightButton.addEventListener("click", function() {
+            const activeLeftButton = document.querySelector(".left-div button.active");
+            if (activeLeftButton) {
+                const leftButtonIndex = Array.from(leftButtons).indexOf(activeLeftButton);
+                const correctConnection = isCorrectConnection(leftButtonIndex, Array.from(rightButtons).indexOf(rightButton));
+                
+                // 根据正确与否显示相应的提示图片
+                if (correctConnection) {
+                    showCorrectIndicator();
+                } else {
+                    showIncorrectIndicator();
+                }
+            }
+        });
+    });
+
+    function showCorrectIndicator() {
+        const correctImg = document.querySelector(".correct-img");
+        correctImg.style.display = 'block';
+        setTimeout(() => {
+            correctImg.style.display = 'none';
+        }, 1500); // 显示1.5秒后隐藏
+    }
+
+    function showIncorrectIndicator() {
+        const incorrectImg = document.querySelector(".incorrect-img");
+        incorrectImg.style.display = 'block';
+        setTimeout(() => {
+            incorrectImg.style.display = 'none';
+        }, 1500); // 显示1.5秒后隐藏
+    }
+
+    function isCorrectConnection(leftIndex, rightIndex) {
+        // 定义每对按钮的正确连接关系
+        const correctConnections = [
+            { left: 0, right: 1 },
+            { left: 1, right: 2 },
+            { left: 2, right: 3 },
+            { left: 3, right: 4 },
+            { left: 4, right: 0 },   
+        ];
+        // 检查给定的 leftIndex 和 rightIndex 是否匹配任何正确连接
+        return correctConnections.some(conn => conn.left === leftIndex && conn.right === rightIndex);
+    }
+});
+
+</script> 
+</body>
+</html>

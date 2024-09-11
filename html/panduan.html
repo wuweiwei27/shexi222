@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>判断题</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-size:cover;
+            background-image: url("../img/pbg.jpg");
+        }
+
+        .shell {
+            position: relative;
+            min-width: 1000px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            /* 设置3d变化 */
+            transform-style: preserve-3d;
+            /* 添加透视效果 */
+            perspective: 900px;
+        }
+
+        .shell .box {
+            position: relative;
+            width: 250px;
+            height: 350px;
+            transition: 0.3s;
+            overflow: hidden;
+            margin: 30px;
+            transform: rotateY(0deg);
+            transition-delay: .1s;
+            border-radius: 5px;
+            border: #fff 5px solid;/*边框颜色*/
+        }
+
+        /* 当鼠标所有卡片的父元素点shell上时，
+        所有卡片像Y轴翻转20度 */
+        .shell:hover .box {
+            transform: rotateY(20deg);
+        }
+
+        /* 当鼠标悬浮在当前卡片上时，当前卡片的翻转角度为0，
+        并放大一点二五倍，加个阴影 */
+        .shell .box:hover {
+            transform: rotateY(0deg) scale(1.25);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.7);/*阴影颜色*/
+            z-index: 1;
+        }
+
+        /* 当鼠标悬浮在卡片上时，
+        当前卡片后面的所有卡片全部都反向翻转负20度 */
+        .shell .box:hover~.box {
+            transform: rotateY(-20deg);
+        }
+
+        .shell .box .images img {
+            width: 100%;
+        }
+
+        .shell .box .content {
+            position: absolute;
+            top: 0;
+            width: 90%;
+            height: 100%;
+            z-index: 999;
+            padding: 15px;
+        }
+
+        .shell .box .content h2 {
+            color: rgb(255, 255, 255);/*方框标题颜色*/
+            transition: 0.3s;
+            font-size: 20px;
+            transform: translateY(-100px);
+        }
+
+        .shell .box:hover .content h2 {
+            transform: translateY(-15px);
+        }
+
+        .shell .box .content p {
+            color: rgb(167, 43, 43);/*下方答案颜色*/
+            transition: 0.3s;
+            font-size: 14px;
+            transform: translateY(600px);
+            background-color: rgba(0,0,0,0);/*下方答案框颜色*/
+        }
+
+        .shell .box:hover .content p {
+            transform: translateY(238px);/*答案框下移高度*/
+        }
+
+        .floating-image {  
+            position: fixed; /* 使用固定定位 */  
+            bottom: 20px; /* 距离页面底部20px */  
+            right: 20px; /* 距离页面右边20px */  
+            width: 50px; /* 图片宽度，根据实际情况调整 */  
+            height: auto; /* 图片高度自适应 */  
+            z-index: 1000; /* 确保图片在大多数元素之上 */  
+            cursor: pointer;
+        }
+
+        .floating-image-above {  
+        position: fixed; /* 同样使用固定定位 */  
+        bottom: 70px; /* 调整为比原图更高的位置，这里假设原图高度不会超过50px，所以增加50px作为间隔 */  
+        right: -10px; /* 保持与原图相同的右侧距离 */  
+        width: 100px; /* 与原图相同的宽度 */  
+        height: auto; /* 高度自适应 */  
+        z-index: 1001; /* 确保新图在原图之上 */  
+        /* 可以添加一些其他样式来区分新旧图片，如边框、阴影等 */  
+        /* border: 2px solid #000; */ /* 示例：添加黑色边框 */  
+        /* box-shadow: 0 0 5px rgba(0,0,0,0.5); */ /* 示例：添加阴影效果 */  
+        cursor: pointer; /* 同样设置为可点击 */  
+        }
+    </style>
+</head>
+
+<body>
+    <img src="..\img\return.png" alt="悬浮图片" class="floating-image" onclick="返回上一页()" >
+    <script>
+        function 返回上一页() {
+            window.history.back();
+        }
+    </script>
+    
+<a href="../html/xuanzeti.html">
+    <img src="../img/next.png" alt="悬浮图片" class="floating-image-above">
+</a>
+
+    <div class="shell">
+        <div class="box">
+            <div class="images">
+                <img src="../img/pbg1.jpg">
+            </div>
+            <div class="content">
+                <p>×<br/>
+                    归省：从外地回到家乡探亲；<br/>
+                    自失：因感空虚、不足而内心若有所失；<br/>
+                    絮叨：啰啰嗦嗦的说。
+                </p>
+            </div>
+        </div>
+        <div class="box">
+            <div class="images">
+                <img src="../img/pbg2.jpg">
+            </div>
+            <div class="content">
+                <p>√<br/>
+                    全部正确
+                </p>
+            </div>
+        </div>
+        <div class="box">
+            <div class="images">
+                <img src="../img/pbg3.jpg">
+            </div>
+            <div class="content">
+                <p>√<br/>
+                    小说标题点明了它的中心事件，因此作者花了很多笔墨来写社戏的内容。
+                </p>
+            </div>
+        </div>
+        <div class="box">
+            <div class="images">
+                <img src="../img/pbg4.jpg">
+            </div>
+            <div class="content">
+                <p>×<br/>
+                    该句为比喻句，把“航船”比作“大白鱼”，拟人手法是将“物”看成是“人”来写。
+                </p>
+            </div>
+        </div>
+        <div class="box">
+            <div class="images">
+                <img src="../img/pbg5.jpg">
+            </div>
+            <div class="content">
+                <p>×<br/>
+                    该句无语病问题。病句原因一般有成分残缺、成分赘余、搭配不当、用词不当、词序不当、结构混乱等。
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
